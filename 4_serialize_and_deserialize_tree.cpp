@@ -13,81 +13,42 @@ class TreeNode
     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
 };
 
-class Solution
-{
+class Solution {
 public:
-    string serialize(TreeNode *root)
-    {
-        if (!root)
-        {
-            return "";
+    void preorder(TreeNode* root,string &temp){
+        if(root==nullptr) {
+            temp+="N ";
+            return;
         }
-
-        string s = "";
-        queue<TreeNode *> q;
-        q.push(root);
-
-        while (!q.empty())
-        {
-            TreeNode *curNode = q.front();
-            q.pop();
-            if (curNode == nullptr)
-            {
-                s += "#,";
-            }
-            else
-            {
-                s += to_string(curNode->val) + ",";
-                q.push(curNode->left);
-                q.push(curNode->right);
-            }
-        }
-
-        return s;
+        temp+=to_string(root->val)+" ";
+        preorder(root->left,temp);
+        preorder(root->right,temp);
     }
 
-    TreeNode *deserialize(string data)
-    {
-        
-        if (data.empty())
-        {
-            return nullptr;
-        }
-
-        stringstream s(data);
-        string str;
-    
-        getline(s, str, ',');
-        TreeNode *root = new TreeNode(stoi(str));
-
-        queue<TreeNode *> q;
-        q.push(root);
-
-        while (!q.empty())
-        {
-            TreeNode *node = q.front();
-            q.pop();
-
-            getline(s, str, ',');
-            
-            if (str != "#")
-            {
-                TreeNode *leftNode = new TreeNode(stoi(str));
-                node->left = leftNode;
-                q.push(leftNode);
-            }
-
-            getline(s, str, ',');
-            if (str != "#")
-            {
-                TreeNode *rightNode = new TreeNode(stoi(str));
-                node->right = rightNode;
-                q.push(rightNode);
-            }
-        }
+    TreeNode* preorderDe(istringstream &d){
+        string node;
+        d>>node;
+        if(node=="N") return nullptr;
+        TreeNode* root=new TreeNode(stoi(node));
+        root->left=preorderDe(d);
+        root->right=preorderDe(d);
         return root;
+
+    }
+    string serialize(TreeNode* root) {
+        string temp;
+        preorder(root,temp);
+        return temp;
+    }
+
+    TreeNode* deserialize(string data) {
+        istringstream d(data);
+         return preorderDe(d);
+        // return nullptr;
     }
 };
+
+
 
 void inorder(TreeNode *root)
 {
